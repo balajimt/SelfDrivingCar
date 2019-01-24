@@ -5,9 +5,11 @@ import scipy.misc
 import cv2
 from subprocess import call
 import math
+import time
+
 
 from Configurations import steeringImage,swImageRows,swImageCols,steeringAngle
-from Configurations import xColumnDataset,yColumnDataset,noOfImages
+from Configurations import xColumnDataset,yColumnDataset,noOfImages,counterVariable
 import model
 
 # Tensorflow session is created and the weight file is loaded
@@ -15,15 +17,23 @@ tensorflowSession = tf.InteractiveSession()
 savedWeightSession = tf.train.Saver()
 savedWeightSession.restore(tensorflowSession, "save/model.ckpt")
 
-counterVariable = math.ceil(noOfImages*0.8)
-print("Starting frameofvideo:" +str(counterVariable))
+timestr = time.strftime("%Y%m%d-%H%M%S")
+
+with open('logs//'+timestr+'.csv','a') as fd:
+    fd.write("Predicted angle,Actual Angle\n"+str(yColumnDataset[counterVariable]*180/math.pi))
 
 while(cv2.waitKey(10) != ord('q')):
+    # Reading the image data
     colorImageData = scipy.misc.imread("DrivingDataset/" + str(counterVariable) + ".jpg", mode="RGB")
     grayscaleImageData = scipy.misc.imresize(colorImageData[-150:], [66, 200]) / 255.0
+	
+    # Predicted angle is got from the Model's predictions
     predictedAngle = model.y.eval(feed_dict={model.x: [grayscaleImageData], model.keep_prob: 1.0})[0][0] * 180.0 / math.pi
     
-    print("Steering angle: " + str(predictedAngle) + " (pred)\t" + str(yColumnDataset[counterVariable]*180/math.pi) + " (actual)")
+    with open('logs//'+timestr+'.csv','a') as fd:
+        fd.write(str(predictedAngle)+","+str(yColumnDataset[counterVariable]*180/math.pi)+"\n")
+        
+    # print("Steering angle: " + str(predictedAngle) + " (pred)\t" + str(yColumnDataset[counterVariable]*180/math.pi) + " (actual)")
     cv2.imshow("frame", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
 	
     steeringAngle += 0.2 * pow(abs((predictedAngle - steeringAngle)), 2.0 / 3.0) * (predictedAngle - steeringAngle) / abs(predictedAngle - steeringAngle)
@@ -31,5 +41,5 @@ while(cv2.waitKey(10) != ord('q')):
     steeringWheelImage = cv2.warpAffine(steeringImage,M,(swImageCols,swImageRows))
     cv2.imshow("Steering Wheel Angle", steeringWheelImage)
     counterVariable += 1
-
+	
 cv2.destroyAllWindows()

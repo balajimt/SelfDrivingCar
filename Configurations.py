@@ -14,3 +14,6 @@ with open("DrivingDataset/data.txt") as f:
         xColumnDataset.append("DrivingDataset/" + line.split()[0])
         yColumnDataset.append(float(line.split()[1]) * math.pi / 180)
 noOfImages = len(xColumnDataset)
+
+# Counter
+counterVariable = math.ceil(noOfImages*0.8)
