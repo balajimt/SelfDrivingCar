@@ -17,6 +17,7 @@ tensorflowSession = tf.InteractiveSession()
 savedWeightSession = tf.train.Saver()
 savedWeightSession.restore(tensorflowSession, "save/model.ckpt")
 
+# Setting up time string for log creation
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
 with open('logs//'+timestr+'.csv','a') as fd:
@@ -33,12 +34,12 @@ while(cv2.waitKey(10) != ord('q')):
     with open('logs//'+timestr+'.csv','a') as fd:
         fd.write(str(predictedAngle)+","+str(yColumnDataset[counterVariable]*180/math.pi)+"\n")
         
-    # print("Steering angle: " + str(predictedAngle) + " (pred)\t" + str(yColumnDataset[counterVariable]*180/math.pi) + " (actual)")
-    cv2.imshow("frame", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
+    cv2.imshow("RoadView", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
 	
     steeringAngle += 0.2 * pow(abs((predictedAngle - steeringAngle)), 2.0 / 3.0) * (predictedAngle - steeringAngle) / abs(predictedAngle - steeringAngle)
     M = cv2.getRotationMatrix2D((swImageCols/2,swImageRows/2),-steeringAngle,1)
-    steeringWheelImage = cv2.warpAffine(steeringImage,M,(swImageCols,swImageRows))
+    
+	steeringWheelImage = cv2.warpAffine(steeringImage,M,(swImageCols,swImageRows))
     cv2.imshow("Steering Wheel Angle", steeringWheelImage)
     counterVariable += 1
 	
