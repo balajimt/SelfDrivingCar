@@ -37,9 +37,9 @@ while(cv2.waitKey(10) != ord('q')):
     cv2.imshow("RoadView", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
 	
     steeringAngle += 0.2 * pow(abs((predictedAngle - steeringAngle)), 2.0 / 3.0) * (predictedAngle - steeringAngle) / abs(predictedAngle - steeringAngle)
-    M = cv2.getRotationMatrix2D((swImageCols/2,swImageRows/2),-steeringAngle,1)
+    steeringWheelImageRotation = cv2.getRotationMatrix2D((swImageCols/2,swImageRows/2),-steeringAngle,1)
     
-	steeringWheelImage = cv2.warpAffine(steeringImage,M,(swImageCols,swImageRows))
+	steeringWheelImage = cv2.warpAffine(steeringImage,steeringWheelImageRotation,(swImageCols,swImageRows))
     cv2.imshow("Steering Wheel Angle", steeringWheelImage)
     counterVariable += 1
 	
