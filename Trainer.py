@@ -1,53 +1,52 @@
+__author__ = "Balaji Muthazhagan, Anirudh GJ"
+
 import os
 import tensorflow as tf
-from tensorflow.core.protobuf import saver_pb2
-import DrivingData
+
 import model
+import DrivingData
+from Configurations import normConstant, modelSavePoint
+from Configurations import noOfEpochs, batchSize
 
-LOGDIR = './save'
+from tensorflow.core.protobuf import saver_pb2
 
+# Create tensorflow session
 tensorflowSession = tf.InteractiveSession()
+trainableVariables = tf.trainable_variables()
 
-L2NormConst = 0.001
-
-train_vars = tf.trainable_variables()
-
-loss = tf.reduce_mean(tf.square(tf.subtract(model.y_, model.y))) + tf.add_n([tf.nn.l2_loss(v) for v in train_vars]) * L2NormConst
-train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
+# Define model loss and trainer
+modelLoss = tf.reduce_mean(tf.square(tf.subtract(model.y_, model.y))) + tf.add_n([tf.nn.l2_loss(v) for v in trainableVariables]) * normConstant
+modelTrainer = tf.train.AdamOptimizer(1e-4).minimize(modelLoss)
 tensorflowSession.run(tf.initialize_all_variables())
+tf.summary.scalar("Loss", modelLoss)
+summary =  tf.summary.merge_all()
 
-# create a summary to monitor cost tensor
-tf.summary.scalar("loss", loss)
-# merge all summaries into a single op
-merged_summary_op =  tf.summary.merge_all()
-
+# Save weight session
 savedWeightSession = tf.train.Saver(write_version = saver_pb2.SaverDef.V1)
 
-# op to write logs to Tensorboard
+# Log into tensorboard
 logs_path = './logs'
-summary_writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
+summaryFileWriter = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
 
-noOfEpochs = 30
-batchSize = 100
 
-# train over the dataset about 30 times
+# Train around the dataset
 for epoch in range(noOfEpochs):
   for counterVariable in range(int(DrivingData.noOfImages/batchSize)):
     xColumnDataset, yColumnDataset = DrivingData.loadTrainData(batchSize)
-    train_step.run(feed_dict={model.x: xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 0.8})
+    modelTrainer.run(feed_dict={model.x: xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 0.8})
     if counterVariable % 10 == 0:
       xColumnDataset, yColumnDataset = DrivingData.loadValidationData(batchSize)
-      loss_value = loss.eval(feed_dict={model.x:xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 1.0})
+      loss_value = modelLoss.eval(feed_dict={model.x:xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 1.0})
       print("Epoch: %d, Step: %d, Loss: %g" % (epoch, epoch * batchSize + counterVariable, loss_value))
 
-    # write logs at every iteration
-    summary = merged_summary_op.eval(feed_dict={model.x:xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 1.0})
-    summary_writer.add_summary(summary, epoch * DrivingData.noOfImages/batchSize + counterVariable)
+	
+    summary = summary.eval(feed_dict={model.x:xColumnDataset, model.y_: yColumnDataset, model.keep_prob: 1.0})
+    summaryFileWriter.add_summary(summary, epoch * DrivingData.noOfImages/batchSize + counterVariable)
 
     if counterVariable % batchSize == 0:
-      if not os.path.exists(LOGDIR):
-        os.makedirs(LOGDIR)
-      checkpoint_path = os.path.join(LOGDIR, "model.ckpt")
-      filename = savedWeightSession.save(tensorflowSession, checkpoint_path)
-  print("Model saved in file: %s" % filename)
+      if not os.path.exists(modelSavePoint):
+        os.makedirs(modelSavePoint)
+      path = os.path.join(modelSavePoint, "model.ckpt")
+      filename = savedWeightSession.save(tensorflowSession, path)
+  print("Model successfully saved at: %s" % filename)
 

@@ -29,3 +29,7 @@ modelSavePoint = './save'
 # Training Configs
 noOfEpochs = 30
 batchSize = 100
+
+# Pointers to keep track of batch information
+trainBatchPointer = 0
+validationBatchPointer = 0
