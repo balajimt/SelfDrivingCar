@@ -1,3 +1,5 @@
+__author__ = "Balaji Muthazhagan, Anirudh GJ"
+
 import scipy.misc
 import random
 

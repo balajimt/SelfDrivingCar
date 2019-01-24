@@ -1,3 +1,5 @@
+__author__ = "Balaji Muthazhagan, Anirudh GJ"
+
 import cv2
 import math
 
@@ -17,3 +19,13 @@ noOfImages = len(xColumnDataset)
 
 # Counter
 counterVariable = math.ceil(noOfImages*0.8)
+
+# Norm constant for training
+normConstant = 0.001
+
+# Model save point
+modelSavePoint = './save'
+
+# Training Configs
+noOfEpochs = 30
+batchSize = 100
