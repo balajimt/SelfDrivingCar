@@ -21,7 +21,7 @@ savedWeightSession.restore(tensorflowSession, "save/model.ckpt")
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
 with open('logs//'+timestr+'.csv','a') as fd:
-    fd.write("Predicted angle,Actual Angle\n"))
+    fd.write("Predicted angle,Actual Angle\n")
 
 while(cv2.waitKey(10) != ord('q')):
     # Reading the image data
@@ -29,7 +29,7 @@ while(cv2.waitKey(10) != ord('q')):
     grayscaleImageData = scipy.misc.imresize(colorImageData[-150:], [66, 200]) / 255.0
 	
     # Predicted angle is got from the Model's predictions
-    predictedAngle = model.y.eval(feed_dict={model.x: [grayscaleImageData], model.keep_prob: 1.0})[0][0] * 180.0 / math.pi
+    predictedAngle = model.y.eval(feed_dict={model.inputX: [grayscaleImageData], model.keep_prob: 1.0})[0][0] * 180.0 / math.pi
     
     # Writing to logs
     with open('logs//'+timestr+'.csv','a') as fd:
@@ -38,7 +38,7 @@ while(cv2.waitKey(10) != ord('q')):
     # Showing the video frame and steering wheel on screen
     cv2.imshow("RoadView", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
 	
-    steeringAngle += 0.2 * pow(abs((predictedAngle - steeringAngle)), 2.0 / 3.0) * (predictedAngle - steeringAngle) / abs(predictedAngle - steeringAngle)
+    steeringAngle += 0.2 * (predictedAngle - steeringAngle)
     steeringWheelImageRotation = cv2.getRotationMatrix2D((swImageCols/2,swImageRows/2),-steeringAngle,1)
     
     steeringWheelImage = cv2.warpAffine(steeringImage,steeringWheelImageRotation,(swImageCols,swImageRows))
@@ -46,3 +46,5 @@ while(cv2.waitKey(10) != ord('q')):
     counterVariable += 1
 	
 cv2.destroyAllWindows()
+
+

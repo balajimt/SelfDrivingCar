@@ -1,88 +1,88 @@
 import tensorflow as tf
 import scipy
 
-def weight_variable(shape):
+def weightAssigner(shape):
   initial = tf.truncated_normal(shape, stddev=0.1)
   return tf.Variable(initial)
 
-def bias_variable(shape):
+def biasAssigner(shape):
   initial = tf.constant(0.1, shape=shape)
   return tf.Variable(initial)
 
 def conv2d(x, W, stride):
   return tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding='VALID')
 
-x = tf.placeholder(tf.float32, shape=[None, 66, 200, 3])
+inputX = tf.placeholder(tf.float32, shape=[None, 66, 200, 3])
 y_ = tf.placeholder(tf.float32, shape=[None, 1])
 
-x_image = x
+x_image = inputX
 
 #first convolutional layer
-W_conv1 = weight_variable([5, 5, 3, 24])
-b_conv1 = bias_variable([24])
+weightConvolution1 = weightAssigner([5, 5, 3, 24])
+biasConvolution1 = biasAssigner([24])
 
-h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1, 2) + b_conv1)
+outputConvolution1 = tf.nn.relu(conv2d(x_image, weightConvolution1, 2) + biasConvolution1)
 
 #second convolutional layer
-W_conv2 = weight_variable([5, 5, 24, 36])
-b_conv2 = bias_variable([36])
+weightConvolution2 = weightAssigner([5, 5, 24, 36])
+biasConvolution2 = biasAssigner([36])
 
-h_conv2 = tf.nn.relu(conv2d(h_conv1, W_conv2, 2) + b_conv2)
+outputConvolution2 = tf.nn.relu(conv2d(outputConvolution1, weightConvolution2, 2) + biasConvolution2)
 
 #third convolutional layer
-W_conv3 = weight_variable([5, 5, 36, 48])
-b_conv3 = bias_variable([48])
+weightConvolution3 = weightAssigner([5, 5, 36, 48])
+biasConvolution3 = biasAssigner([48])
 
-h_conv3 = tf.nn.relu(conv2d(h_conv2, W_conv3, 2) + b_conv3)
+outputConvolution3 = tf.nn.relu(conv2d(outputConvolution2, weightConvolution3, 2) + biasConvolution3)
 
 #fourth convolutional layer
-W_conv4 = weight_variable([3, 3, 48, 64])
-b_conv4 = bias_variable([64])
+weightConvolution4 = weightAssigner([3, 3, 48, 64])
+biasConvolution4 = biasAssigner([64])
 
-h_conv4 = tf.nn.relu(conv2d(h_conv3, W_conv4, 1) + b_conv4)
+outputConvolution4 = tf.nn.relu(conv2d(outputConvolution3, weightConvolution4, 1) + biasConvolution4)
 
 #fifth convolutional layer
-W_conv5 = weight_variable([3, 3, 64, 64])
-b_conv5 = bias_variable([64])
+weightConvolution5 = weightAssigner([3, 3, 64, 64])
+biasConvolution5 = biasAssigner([64])
 
-h_conv5 = tf.nn.relu(conv2d(h_conv4, W_conv5, 1) + b_conv5)
+outputConvolution5 = tf.nn.relu(conv2d(outputConvolution4, weightConvolution5, 1) + biasConvolution5)
 
 #FCL 1
-W_fc1 = weight_variable([1152, 1164])
-b_fc1 = bias_variable([1164])
+weightFullyConnected1 = weightAssigner([1152, 1164])
+biasFullyConnected1 = biasAssigner([1164])
 
-h_conv5_flat = tf.reshape(h_conv5, [-1, 1152])
-h_fc1 = tf.nn.relu(tf.matmul(h_conv5_flat, W_fc1) + b_fc1)
+outputConvolution5_flat = tf.reshape(outputConvolution5, [-1, 1152])
+outputFullyConnected1 = tf.nn.relu(tf.matmul(outputConvolution5_flat, weightFullyConnected1) + biasFullyConnected1)
 
 keep_prob = tf.placeholder(tf.float32)
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+outputFullyConnected1_drop = tf.nn.dropout(outputFullyConnected1, keep_prob)
 
 #FCL 2
-W_fc2 = weight_variable([1164, 100])
-b_fc2 = bias_variable([100])
+weightFullyConnected2 = weightAssigner([1164, 100])
+biasFullyConnected2 = biasAssigner([100])
 
-h_fc2 = tf.nn.relu(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+outputFullyConnected2 = tf.nn.relu(tf.matmul(outputFullyConnected1_drop, weightFullyConnected2) + biasFullyConnected2)
 
-h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
-
-#FCL 3
-W_fc3 = weight_variable([100, 50])
-b_fc3 = bias_variable([50])
-
-h_fc3 = tf.nn.relu(tf.matmul(h_fc2_drop, W_fc3) + b_fc3)
-
-h_fc3_drop = tf.nn.dropout(h_fc3, keep_prob)
+outputFullyConnected2_drop = tf.nn.dropout(outputFullyConnected2, keep_prob)
 
 #FCL 3
-W_fc4 = weight_variable([50, 10])
-b_fc4 = bias_variable([10])
+weightFullyConnected3 = weightAssigner([100, 50])
+biasFullyConnected3 = biasAssigner([50])
 
-h_fc4 = tf.nn.relu(tf.matmul(h_fc3_drop, W_fc4) + b_fc4)
+outputFullyConnected3 = tf.nn.relu(tf.matmul(outputFullyConnected2_drop, weightFullyConnected3) + biasFullyConnected3)
 
-h_fc4_drop = tf.nn.dropout(h_fc4, keep_prob)
+outputFullyConnected3_drop = tf.nn.dropout(outputFullyConnected3, keep_prob)
+
+#FCL 3
+weightFullyConnected4 = weightAssigner([50, 10])
+biasFullyConnected4 = biasAssigner([10])
+
+outputFullyConnected4 = tf.nn.relu(tf.matmul(outputFullyConnected3_drop, weightFullyConnected4) + biasFullyConnected4)
+
+outputFullyConnected4_drop = tf.nn.dropout(outputFullyConnected4, keep_prob)
 
 #Output
-W_fc5 = weight_variable([10, 1])
-b_fc5 = bias_variable([1])
+weightFullyConnected5 = weightAssigner([10, 1])
+biasFullyConnected5 = biasAssigner([1])
 
-y = tf.multiply(tf.atan(tf.matmul(h_fc4_drop, W_fc5) + b_fc5), 2) #scale the atan output
+y = tf.multiply(tf.atan(tf.matmul(outputFullyConnected4_drop, weightFullyConnected5) + biasFullyConnected5), 2) #scale the atan output
