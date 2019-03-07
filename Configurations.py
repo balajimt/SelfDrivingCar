@@ -11,10 +11,13 @@ steeringAngle = 0
 # Data set parser information
 xColumnDataset = []
 yColumnDataset = []
-with open("DrivingDataset/data.txt") as f:
+with open("DrivingDatasetOutput//data.txt") as f:
     for line in f:
-        xColumnDataset.append("DrivingDataset/" + line.split()[0])
-        yColumnDataset.append(float(line.split()[1]) * math.pi / 180)
+        try:
+            xColumnDataset.append("DrivingDatasetOutput//" + line.split()[0])
+            yColumnDataset.append(float(line.split()[1]) * math.pi / 180)
+        except:
+            pass
 noOfImages = len(xColumnDataset)
 
 # Counter
