@@ -4,8 +4,19 @@ import cv2
 import math
 
 # Steering Wheel Image and configurations
-steeringImage = cv2.imread('img//SteeringWheel.jpg',0)
-swImageRows,swImageCols = steeringImage.shape
+STEERING_IMAGE = cv2.imread('img//SteeringWheel.jpg', 0)
+SW_IMAGE_ROWS, SW_IMAGE_COLS = STEERING_IMAGE.shape
+
+# Norm constant for training
+NORM_CONSTANT = 0.001
+
+# Model save point
+MODEL_SAVE_POINT = './save'
+
+# Training Configs
+NO_OF_EPOCHS = 30
+BATCH_SIZE = 100
+
 steeringAngle = 0
 
 # Data set parser information
@@ -18,20 +29,13 @@ with open("DrivingDatasetOutput//data.txt") as f:
             yColumnDataset.append(float(line.split()[1]) * math.pi / 180)
         except:
             pass
-noOfImages = len(xColumnDataset)
+NO_OF_IMAGES = len(xColumnDataset)
 
 # Counter
-counterVariable = math.ceil(noOfImages*0.8)
+COUNTER_VARIABLE = math.ceil(NO_OF_IMAGES * 0.8)
 
-# Norm constant for training
-normConstant = 0.001
 
-# Model save point
-modelSavePoint = './save'
 
-# Training Configs
-noOfEpochs = 30
-batchSize = 100
 
 # Pointers to keep track of batch information
 trainBatchPointer = 0

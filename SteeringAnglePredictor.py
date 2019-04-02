@@ -8,8 +8,8 @@ import math
 import time
 
 
-from Configurations import steeringImage,swImageRows,swImageCols,steeringAngle
-from Configurations import xColumnDataset,yColumnDataset,noOfImages,counterVariable
+from Configurations import STEERING_IMAGE,SW_IMAGE_ROWS,SW_IMAGE_COLS,steeringAngle
+from Configurations import xColumnDataset,yColumnDataset,NO_OF_IMAGES,COUNTER_VARIABLE
 import model
 
 # Tensorflow session is created and the weight file is loaded
@@ -24,7 +24,7 @@ with open('logs//'+timestr+'.csv','a') as fd:
     fd.write("Predicted angle,Actual Angle\n")
 
 while(cv2.waitKey(10) != ord('q')):
-    counterVariable += 1
+    COUNTER_VARIABLE += 1
     try:
         # Read image data
         colorImageData = scipy.misc.imread(xColumnDataset[counterVariable], mode="RGB")
@@ -41,9 +41,9 @@ while(cv2.waitKey(10) != ord('q')):
         cv2.imshow("RoadView", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
             
         steeringAngle += 0.2 * (predictedAngle - steeringAngle)
-        steeringWheelImageRotation = cv2.getRotationMatrix2D((swImageCols/2,swImageRows/2),-steeringAngle,1)
+        steeringWheelImageRotation = cv2.getRotationMatrix2D((SW_IMAGE_COLS / 2, SW_IMAGE_ROWS / 2), -steeringAngle, 1)
         
-        steeringWheelImage = cv2.warpAffine(steeringImage,steeringWheelImageRotation,(swImageCols,swImageRows))
+        steeringWheelImage = cv2.warpAffine(STEERING_IMAGE, steeringWheelImageRotation, (SW_IMAGE_COLS, SW_IMAGE_ROWS))
         cv2.imshow("Steering Wheel Angle", steeringWheelImage)
     except:
         pass
