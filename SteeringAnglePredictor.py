@@ -26,7 +26,7 @@ with open('logs//'+timestr+'.csv','a') as fd:
 while(cv2.waitKey(10) != ord('q')):
     counterVariable += 1
     try:
-        # Reading the image data
+        # Read image data
         colorImageData = scipy.misc.imread(xColumnDataset[counterVariable], mode="RGB")
         grayscaleImageData = scipy.misc.imresize(colorImageData[-150:], [66, 200]) / 255.0
             
