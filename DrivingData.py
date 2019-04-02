@@ -2,8 +2,7 @@ __author__ = "Balaji Muthazhagan, Anirudh GJ"
 
 import scipy.misc
 import random
-from Configurations import xColumnDataset, yColumnDataset, NO_OF_IMAGES
-from Configurations import trainBatchPointer, validationBatchPointer
+from Configurations import xColumnDataset, yColumnDataset
 
 # Training Dataset
 trainX = xColumnDataset[:int(len(xColumnDataset) * 0.8)]

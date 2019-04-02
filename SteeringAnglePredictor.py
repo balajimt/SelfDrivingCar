@@ -9,7 +9,7 @@ import time
 
 
 from Configurations import STEERING_IMAGE,SW_IMAGE_ROWS,SW_IMAGE_COLS,steeringAngle
-from Configurations import xColumnDataset,yColumnDataset,NO_OF_IMAGES,COUNTER_VARIABLE
+from Configurations import xColumnDataset,yColumnDataset,COUNTER_VARIABLE
 import model
 
 # Tensorflow session is created and the weight file is loaded
@@ -27,7 +27,7 @@ while(cv2.waitKey(10) != ord('q')):
     COUNTER_VARIABLE += 1
     try:
         # Read image data
-        colorImageData = scipy.misc.imread(xColumnDataset[counterVariable], mode="RGB")
+        colorImageData = scipy.misc.imread(xColumnDataset[COUNTER_VARIABLE], mode="RGB")
         grayscaleImageData = scipy.misc.imresize(colorImageData[-150:], [66, 200]) / 255.0
             
         # Predicted angle is got from the Model's predictions
@@ -35,7 +35,7 @@ while(cv2.waitKey(10) != ord('q')):
         
         # Writing to logs
         with open('logs//'+timestr+'.csv','a') as fd:
-            fd.write(str(predictedAngle)+","+str(yColumnDataset[counterVariable]*180/math.pi)+"\n")
+            fd.write(str(predictedAngle)+","+str(yColumnDataset[COUNTER_VARIABLE]*180/math.pi)+"\n")
         
         # Showing the video frame and steering wheel on screen
         cv2.imshow("RoadView", cv2.cvtColor(colorImageData, cv2.COLOR_RGB2BGR))
