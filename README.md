@@ -21,3 +21,7 @@ python3 Trainer.py
 ```
 python3 SteeringAnglePredictor.py
 ```
+### Output
+
+![image](https://user-images.githubusercontent.com/7134314/126082995-25e6be03-aa4d-4725-a34d-0b9cef5ca6d6.png)
+
